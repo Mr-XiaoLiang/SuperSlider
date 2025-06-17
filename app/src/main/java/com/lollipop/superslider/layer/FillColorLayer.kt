@@ -4,6 +4,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import com.lollipop.superslider.SuperSlider
+import com.lollipop.superslider.basic.LayerHelper
 
 class FillColorLayer : SuperSlider.BackgroundLayer, SuperSlider.ForegroundLayer,
     SuperSlider.ActiveLayer {
@@ -15,6 +16,8 @@ class FillColorLayer : SuperSlider.BackgroundLayer, SuperSlider.ForegroundLayer,
         }
     }
 
+    private val layerHelper = LayerHelper()
+
     var fillColor: Int
         get() {
             return paint.color
@@ -23,10 +26,14 @@ class FillColorLayer : SuperSlider.BackgroundLayer, SuperSlider.ForegroundLayer,
             paint.color = value
         }
 
-    var radius: Float = 0F
+    val padding: RectF
+        get() {
+            return layerHelper.padding
+        }
 
-    private val bounds = RectF()
-    private val activeBounds = RectF()
+    var isReversal = false
+
+    var radius: Float = 0F
 
     override fun onSizeChanged(
         left: Int,
@@ -34,24 +41,33 @@ class FillColorLayer : SuperSlider.BackgroundLayer, SuperSlider.ForegroundLayer,
         right: Int,
         bottom: Int
     ) {
-        bounds.set(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
+        layerHelper.onSizeChanged(left, top, right, bottom)
     }
 
     override fun drawBackground(canvas: Canvas, progress: Float) {
-        canvas.drawRoundRect(bounds, radius, radius, paint)
+        canvas.drawRoundRect(
+            layerHelper.getFillBounds(),
+            radius,
+            radius,
+            paint
+        )
     }
 
     override fun drawForeground(canvas: Canvas, progress: Float) {
-        canvas.drawRoundRect(bounds, radius, radius, paint)
+        canvas.drawRoundRect(
+            layerHelper.getFillBounds(),
+            radius,
+            radius,
+            paint
+        )
     }
 
     override fun drawActive(canvas: Canvas, progress: Float) {
-        activeBounds.set(
-            bounds.left,
-            bounds.top,
-            bounds.left + progress * bounds.width(),
-            bounds.bottom
+        canvas.drawRoundRect(
+            layerHelper.getActiveBounds(progress = progress, reversal = isReversal),
+            radius,
+            radius,
+            paint
         )
-        canvas.drawRoundRect(activeBounds, radius, radius, paint)
     }
 }
