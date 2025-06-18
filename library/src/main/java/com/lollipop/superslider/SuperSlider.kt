@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewConfiguration
 import androidx.appcompat.widget.AppCompatImageView
 import kotlin.math.abs
@@ -17,7 +16,7 @@ class SuperSlider @JvmOverloads constructor(
     private val touchHelper by lazy {
         TouchHelper(
             this,
-            onProgressChanged = ::onProgressChanged,
+            onProgressChanged = ::onTouchMoved,
             clickCallback = ::onPositionClick
         )
     }
@@ -43,6 +42,11 @@ class SuperSlider @JvmOverloads constructor(
     var thumbLayer: ThumbLayer? = null
 
     /**
+     * 触摸控制的回调函数
+     */
+    var progressChangeListener: OnProgressChangeListener? = null
+
+    /**
      * 触摸拖拽控制器
      */
     var touchController: TouchController?
@@ -64,10 +68,7 @@ class SuperSlider @JvmOverloads constructor(
         }
 
     var currentProgress: Float = 0F
-        set(value) {
-            field = value
-            invalidate()
-        }
+        private set
 
     private fun onPositionClick(progress: Float) {
         callOnClick()
@@ -85,8 +86,17 @@ class SuperSlider @JvmOverloads constructor(
         thumbLayer?.onSizeChanged(layerLeft, layerTop, layerRight, layerBottom)
     }
 
-    private fun onProgressChanged(progress: Float) {
-        currentProgress = touchController?.transform(progress) ?: progress
+    fun updateProgress(progress: Float) {
+        onProgressChanged(progress, false)
+    }
+
+    private fun onTouchMoved(progress: Float) {
+        onProgressChanged(progress, true)
+    }
+
+    private fun onProgressChanged(progress: Float, fromUser: Boolean) {
+        currentProgress = progress
+        progressChangeListener?.onProgressChanged(progress, fromUser)
         invalidate()
     }
 
@@ -119,7 +129,7 @@ class SuperSlider @JvmOverloads constructor(
     }
 
     class TouchHelper(
-        private val view: View,
+        private val view: SuperSlider,
         private val onProgressChanged: (progress: Float) -> Unit,
         private val clickCallback: (progress: Float) -> Unit
     ) {
@@ -146,9 +156,10 @@ class SuperSlider @JvmOverloads constructor(
                     touchX = getTouchX(event)
                     isClickable = true
                     touchPosition = getTouchPosition(touchX)
+                    controller?.beforeTouch(view.currentProgress)
                     val result = controller?.onTouchDown(touchPosition) ?: false
                     if (result) {
-                        onProgressChanged(touchPosition)
+                        dispatchProgress()
                     }
                     return result
                 }
@@ -161,7 +172,7 @@ class SuperSlider @JvmOverloads constructor(
                     touchPosition = getTouchPosition(x)
                     val result = controller?.onTouchMove(touchPosition) ?: false
                     if (result) {
-                        onProgressChanged(touchPosition)
+                        dispatchProgress()
                     }
                     return result
                 }
@@ -169,12 +180,12 @@ class SuperSlider @JvmOverloads constructor(
                 MotionEvent.ACTION_UP -> {
                     val result = controller?.onTouchUp(touchPosition) ?: false
                     if (result) {
-                        onProgressChanged(touchPosition)
+                        dispatchProgress()
                     }
                     if (isClickable) {
                         val clickResult = controller?.onClick(touchPosition) ?: false
                         if (!clickResult) {
-                            clickCallback(touchPosition)
+                            dispatchClick()
                         }
                     }
                     return result
@@ -183,7 +194,7 @@ class SuperSlider @JvmOverloads constructor(
                 MotionEvent.ACTION_CANCEL -> {
                     val result = controller?.onTouchUp(touchPosition) ?: false
                     if (result) {
-                        onProgressChanged(touchPosition)
+                        dispatchProgress()
                     }
                     return result
                 }
@@ -202,6 +213,16 @@ class SuperSlider @JvmOverloads constructor(
                 }
             }
             return true
+        }
+
+        private fun dispatchProgress() {
+            val progress = controller?.transform(touchPosition) ?: touchPosition
+            onProgressChanged(progress)
+        }
+
+        private fun dispatchClick() {
+            val progress = controller?.transform(touchPosition) ?: touchPosition
+            clickCallback(progress)
         }
 
         private fun getTouchX(event: MotionEvent): Float {
@@ -243,17 +264,32 @@ class SuperSlider @JvmOverloads constructor(
 
     interface TouchController {
 
-        fun onTouchDown(position: Float): Boolean
+        fun beforeTouch(progress: Float) {}
 
-        fun onTouchMove(position: Float): Boolean
+        fun onTouchDown(position: Float): Boolean {
+            return true
+        }
 
-        fun onTouchUp(position: Float): Boolean
+        fun onTouchMove(position: Float): Boolean {
+            return true
+        }
 
-        fun onClick(position: Float): Boolean
+        fun onTouchUp(position: Float): Boolean {
+            return true
+        }
+
+        fun onClick(position: Float): Boolean {
+            return false
+        }
 
         fun transform(progress: Float): Float {
             return progress
         }
 
     }
+
+    fun interface OnProgressChangeListener {
+        fun onProgressChanged(progress: Float, fromUser: Boolean)
+    }
+
 }
