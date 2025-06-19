@@ -17,6 +17,13 @@ class MoveController : SuperSlider.TouchController {
     }
 
     override fun transform(progress: Float): Float {
-        return progress + progressOffset
+        var p = progress + progressOffset
+        if (p < 0) {
+            p = 0F
+        }
+        if (p > 1) {
+            p = 1F
+        }
+        return p
     }
 }

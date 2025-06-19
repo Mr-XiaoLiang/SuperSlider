@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import androidx.appcompat.widget.AppCompatImageView
@@ -84,6 +85,7 @@ class SuperSlider @JvmOverloads constructor(
         foregroundLayer?.onSizeChanged(layerLeft, layerTop, layerRight, layerBottom)
         activeLayer?.onSizeChanged(layerLeft, layerTop, layerRight, layerBottom)
         thumbLayer?.onSizeChanged(layerLeft, layerTop, layerRight, layerBottom)
+        updateTouchEdge()
     }
 
     fun updateProgress(progress: Float) {
@@ -149,6 +151,10 @@ class SuperSlider @JvmOverloads constructor(
 
         private var isClickable = false
 
+        private fun log(message: String) {
+            Log.d("SuperSlider.TOUCH", message)
+        }
+
         fun onTouchEvent(event: MotionEvent): Boolean {
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
@@ -161,6 +167,7 @@ class SuperSlider @JvmOverloads constructor(
                     if (result) {
                         dispatchProgress()
                     }
+                    log("Down, $touchX, $touchPosition, $result")
                     return result
                 }
 
@@ -174,6 +181,7 @@ class SuperSlider @JvmOverloads constructor(
                     if (result) {
                         dispatchProgress()
                     }
+                    log("Move, $touchX, $touchPosition, $result")
                     return result
                 }
 
@@ -188,6 +196,7 @@ class SuperSlider @JvmOverloads constructor(
                             dispatchClick()
                         }
                     }
+                    log("Up, $touchX, $touchPosition, $result")
                     return result
                 }
 
@@ -196,6 +205,7 @@ class SuperSlider @JvmOverloads constructor(
                     if (result) {
                         dispatchProgress()
                     }
+                    log("Cancel, $touchX, $touchPosition, $result")
                     return result
                 }
 
@@ -210,6 +220,7 @@ class SuperSlider @JvmOverloads constructor(
                         isClickable = false
                         touchPosition = getTouchPosition(touchX)
                     }
+                    log("Pointer Up, $touchX, $touchPosition")
                 }
             }
             return true
@@ -283,6 +294,12 @@ class SuperSlider @JvmOverloads constructor(
         }
 
         fun transform(progress: Float): Float {
+            if (progress > 1F) {
+                return 1F
+            }
+            if (progress < 0F) {
+                return 0F
+            }
             return progress
         }
 

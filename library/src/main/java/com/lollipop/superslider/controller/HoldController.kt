@@ -4,7 +4,7 @@ import com.lollipop.superslider.SuperSlider
 import kotlin.math.abs
 
 class HoldController(
-    val touchRadius: Float = 0.05F
+    val touchRadius: Float = 0.1F
 ) : SuperSlider.TouchController {
 
     private var touchPosition = 0F

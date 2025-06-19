@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "SuperSlider"
 include(":library")
- 
+include(":demo")

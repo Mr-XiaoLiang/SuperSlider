@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp">
+
+        <com.lollipop.superslider.SuperSlider
+            android:id="@+id/slider1"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/valueView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/app_name" />
+
+        <com.lollipop.superslider.SuperSlider
+            android:id="@+id/slider2"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/valueView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/app_name" />
+
+        <com.lollipop.superslider.SuperSlider
+            android:id="@+id/slider3"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/valueView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/app_name" />
+
+        <com.lollipop.superslider.SuperSlider
+            android:id="@+id/slider4"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/valueView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/app_name" />
+
+        <com.lollipop.superslider.SuperSlider
+            android:id="@+id/slider5"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/valueView5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/app_name" />
+
+    </LinearLayout>
+</FrameLayout>

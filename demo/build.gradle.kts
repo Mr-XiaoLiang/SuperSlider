@@ -1,15 +1,22 @@
 plugins {
-    alias(libs.plugins.android.library)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
 }
 
 android {
-    namespace = "com.lollipop.superslider"
+    namespace = "com.lollipop.demo"
     compileSdk = 36
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     defaultConfig {
+        applicationId = "com.lollipop.demo"
         minSdk = 21
         targetSdk = 36
+        versionCode = 1
+        versionName = "1.0"
     }
 
     buildTypes {
@@ -34,4 +41,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    implementation(project(":library"))
 }
